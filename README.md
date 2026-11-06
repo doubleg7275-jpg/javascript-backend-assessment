@@ -1,9 +1,21 @@
 
-## About the Project
+## JavaScript Backend Assessment
 
-This repository contains my solutions to 15 JavaScript programming questions. Each question is organised into its own folder to make the project easy to navigate and understand.
+This repository contains my JavaScript assessment projects. Each project is
+organised in its own folder and can be opened from the project homepage.
 
-The assignment demonstrates my understanding of JavaScript concepts, including:
+## Live Demo
+
+After enabling GitHub Pages, open:
+
+**https://doubleg7275-jpg.github.io/javascript-backend-assessment/**
+
+The homepage is also available in the repository as
+[index.html](./index.html).
+
+## Concepts Covered
+
+The projects demonstrate:
 
 - Variables and data types
 - Functions
@@ -16,49 +28,35 @@ The assignment demonstrates my understanding of JavaScript concepts, including:
 - DOM manipulation
 - Data processing
 
-## Project Structure
+## Projects
 
-The project is organised into separate folders, with each folder containing the solution to a particular question.
+- [Bank Account Management System](./BANK%20ACCOUNT%20MANAGEMENT%20SYSTEM/)
+- [Employee Salary Calculator](./EMPLOYEE%20SALARY%20CALCULATOR/)
+- [Error Handling](./ERROR%20HANDLING/)
+- [Fetch APIs](./FETCH%20API'S/)
+- [Inventory Management System](./INVENTORY%20MANAGEMENT%20SYSTEM/)
+- [JavaScript Modules](./JAVASCRIPT%20MODULES/)
+- [JSON Data Management](./JSON%20DATA%20MANAGEMENT/)
+- [Mini User Management Application](./Mini%20User%20Management%20Application/)
+- [Number Analysis System](./NUMBER%20ANALYSIS%20SYSTEM/)
+- [Password Validation System](./PASSWORD%20VALIDATION%20SYSTEM/)
+- [Promise-based Order Processing](./Promise-based%20Order%20Processing/)
+- [Reusable Data Processing Functions](./REUSABLE%20DATA%20PROCESSING%20FUNCTIONS/)
+- [Shopping Cart Application](./SHOPPING%20CART%20APPLICATION/)
+- [Student Grading](./STUDENT%20GRADING/)
+- [Student Management System](./STUDENT%20MANAGEMENT%20SYSTEM/)
 
-```
-PRACTICAL ASSESSMENT/
-│
-├── README.md
-├── Question-1/
-├── Question-2/
-├── Question-3/
-├── Question-4/
-├── Question-5/
-├── Question-6/
-├── Question-7/
-├── Question-8/
-├── Question-9/
-├── Question-10/
-├── Question-11/
-├── Question-12/
-├── Question-13/
-├── Question-14/
-└── Question-15/
-```
-
-## Requirements
-
-To run the solutions, you need:
-
-- Node.js installed on your computer.
-- Visual Studio Code or another code editor.
-
-## How to Run the Solutions
+## How to Run Locally
 
 1. Clone or download this repository.
-2. Open the main project folder in Visual Studio Code.
-3. Open the terminal.
-4. Navigate to the folder containing the question you want to run.
-5. Run the JavaScript file using:
+2. Open [index.html](./index.html) in a browser, or use a local server such as
+   the VS Code Live Server extension.
 
-```bash
-node PRACTICAL ASSESSMENT
-```
+## Enable GitHub Pages
+
+On GitHub, open **Settings → Pages**, choose **Deploy from a branch**, select
+the `main` branch and the `/ (root)` folder, then click **Save**. GitHub will
+publish the live demo at the URL above.
 
 ## Author
 Edidiong Peter
