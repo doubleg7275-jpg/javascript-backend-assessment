@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+      <div id="container">
+
+         <label for="id">ID:</label>
+      <input type="text" id="id" name="id" required /><br /><br />
+
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" name="name" required /><br /><br />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required /><br /><br />
+
+      <label for="age">Age:</label>
+      <input type="text" id="age" name="age" required /><br /><br />
+
+      <label for="course">Course:</label>
+      <input type="text" id="course" name="course" required /><br /><br />
+
+      <input type="button" value="Add Student" id="add-student" />
+
+      <button type="button" id="all-students">show all students</button>
+
+      <br />
+      <br />
+      <button type="button" id="filter-ID">filter Student ID</button>
+      <button type="button" id="update-student">Update Student</button>
+   
+      <div id="output"></div>
+    </div>
+
+    <script>
+      let students = JSON.parse(localStorage.getItem("store")) || [];
+      let currentView = "all";
+      const savedStudents = localStorage.getItem("store");
+      console.log(savedStudents);
+
+      const addBtn = document.getElementById("add-student");
+      const updateBtn = document.getElementById("update-student");
+      const output = document.getElementById("output");
+
+      addBtn.addEventListener("click", studentDB);
+      updateBtn.addEventListener("click", () => updateStudent());
+
+      function studentDB() {
+        const id = document.getElementById("id").value;
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const age = parseInt(document.getElementById("age").value);
+        const course = document.getElementById("course").value;
+
+        let studentDetails = {
+          id: id,
+          name: name,
+          email: email,
+          age: age,
+          course: course,
+        };
+
+        if (!id || !name || !email || !age || !course) {
+          output.innerHTML = `<p style = "color:red;">Error: All fields required</p>`;
+
+          setTimeout(() => {
+            output.innerHTML = "";
+          }, 2000);
+
+          return;
+        }
+
+        students.push(studentDetails);
+
+        localStorage.setItem("store", JSON.stringify(students));
+
+        output.innerHTML = `<p style = "color:green;">student sucessfully added</p>`;
+
+        document.getElementById("id").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("age").value = "";
+        document.getElementById("course").value = "";
+
+        setTimeout(() => {
+          output.innerHTML = "";
+        }, 2000);
+
+        console.log(students);
+      }
+
+      //SHOW STUDENTS
+      const showStudents = document.getElementById("all-students");
+
+      showStudents.addEventListener("click", displayStudents);
+
+      function displayStudents() {
+        output.innerHTML = "";
+        currentView = "all";
+        students = JSON.parse(localStorage.getItem("store")) || [];
+        if (students.length === 0) {
+          output.innerHTML = "<p>No students found.</p>";
+          return;
+        }
+
+        let table = document.createElement("table");
+
+        let header = `
+   <tr>
+      <th>Name</th>
+      <th>Age</th>
+      <th>Course</th>
+      <th>ID</th>
+      <th>Email</th>
+      <th>Action</th>
+    </tr>
+  `;
+
+        table.innerHTML = header;
+
+        students.forEach((student) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+        <td>${student.name}</td>
+        <td>${student.age}</td>
+        <td>${student.course}</td>
+        <td>${student.id}</td>
+        <td>${student.email}</td>
+        <td></td>
+    `;
+          const deleteButton = document.createElement("button");
+          deleteButton.type = "button";
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", () =>
+            deleteStudent(students.indexOf(student))
+          );
+          row.querySelector("td:last-child").appendChild(deleteButton);
+          table.appendChild(row);
+        });
+
+        output.appendChild(table);
+
+        console.log(output);
+      }
+    </script>
+
+    <script>
+      const filterID = document.getElementById("filter-ID");
+
+      filterID.addEventListener("click", filterByID);
+
+      function filterByID() {
+        output.innerHTML = "";
+
+        const studentIDs = students.map((student) => student.id);
+
+        studentIDs.sort();
+
+        output.innerHTML = `<h3>Students IDs</h3>
+
+        <ol>${studentIDs.map((id) => `<li>${id}</li>`).join("")}
+        </ol>
+        `;
+      }
+
+      function updateStudent() {
+        const id = document.getElementById("id").value.trim();
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const age = parseInt(document.getElementById("age").value, 10);
+        const course = document.getElementById("course").value.trim();
+
+        if (!id || !name || !email || Number.isNaN(age) || !course) {
+          output.innerHTML = `<p style="color:red;">Error: All fields are required</p>`;
+          return;
+        }
+
+        const student = students.find((student) => student.id === id);
+
+        if (!student) {
+          output.innerHTML = `<p style="color:red;">Error: Student not found</p>`;
+          return;
+        }
+
+        student.name = name;
+        student.age = age;
+        student.course = course;
+        student.email = email;
+        localStorage.setItem("store", JSON.stringify(students));
+
+        displayStudents();
+        output.insertAdjacentHTML(
+          "afterbegin",
+          `<p style="color:green;">Student successfully updated</p>`
+        );
+      }
+
+
+      function deleteStudent(index) {
+        students.splice(index, 1);
+        localStorage.setItem("store", JSON.stringify(students));
+
+        if (currentView === "all") {
+          displayStudents();
+        } else if (currentView === "course") {
+          filterByCourse();
+        }
+      }
+    </script>
+  </body>
+</html>

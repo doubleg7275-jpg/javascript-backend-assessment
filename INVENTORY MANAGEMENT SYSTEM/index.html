@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+      <div id="container">
+
+         <label for="id">Product ID:</label>
+      <input type="text" id="id" name="id" required /><br /><br />
+
+      <label for="name">Product Name:</label>
+      <input type="text" id="name" name="name" required /><br /><br />
+
+      <label for="price">Price:</label>
+      <input type="number" id="price" name="price" min="0" step="0.01" required /><br /><br />
+
+      <label for="quantity">Quantity in Stock:</label>
+      <input type="number" id="quantity" name="quantity" min="0" required /><br /><br />
+
+      <input type="button" value="Add Product" id="add-product" />
+      <button type="button" id="calculate-total">Calculate Total Value</button>
+
+      <button type="button" id="all-products">show all products</button>
+
+      <br />
+      <br />
+      <label for="search-product">Search Product:</label>
+      <input type="search" id="search-product" placeholder="Enter product ID or name" />
+      <button type="button" id="search-button">Search</button>
+      <button type="button" id="low-stock">Show Low Stock Products</button>
+      <button type="button" id="update-quantity">Update Product Quantity</button>
+   
+      <div id="output"></div>
+      <p id="total-value"></p>
+    </div>
+
+    <script>
+      let products = JSON.parse(localStorage.getItem("store")) || [];
+      let currentView = "all";
+      const savedProducts = localStorage.getItem("store");
+      console.log(savedProducts);
+
+      const addBtn = document.getElementById("add-product");
+      const updateQuantityBtn = document.getElementById("update-quantity");
+      const calculateTotalBtn = document.getElementById("calculate-total");
+      const searchBtn = document.getElementById("search-button");
+      const lowStockBtn = document.getElementById("low-stock");
+      const output = document.getElementById("output");
+      const totalValue = document.getElementById("total-value");
+
+      addBtn.addEventListener("click", productDB);
+      calculateTotalBtn.addEventListener("click", calculateTotalValue);
+      searchBtn.addEventListener("click", searchProduct);
+      lowStockBtn.addEventListener("click", showLowStockProducts);
+
+      function calculateTotalValue() {
+        products = JSON.parse(localStorage.getItem("store")) || [];
+        const total = products.reduce(
+          (sum, product) => sum + Number(product.price) * Number(product.quantity),
+          0
+        );
+        totalValue.textContent = `Total inventory value: $${total.toFixed(2)}`;
+      }
+
+      function clearTotalValue() {
+        totalValue.textContent = "";
+      }
+
+      function searchProduct() {
+        clearTotalValue();
+        const searchTerm = document.getElementById("search-product").value.trim().toLowerCase();
+        products = JSON.parse(localStorage.getItem("store")) || [];
+
+        if (!searchTerm) {
+          output.innerHTML = "<p style=\"color:red;\">Enter a product ID or name to search.</p>";
+          return;
+        }
+
+        const matches = products.filter(
+          (product) =>
+            String(product.id).toLowerCase().includes(searchTerm) ||
+            String(product.name).toLowerCase().includes(searchTerm)
+        );
+
+        displayProducts(matches, "search");
+      }
+
+      function showLowStockProducts() {
+        clearTotalValue();
+        products = JSON.parse(localStorage.getItem("store")) || [];
+        const lowStockProducts = products.filter(
+          (product) => Number(product.quantity) < 5
+        );
+        displayProducts(lowStockProducts, "low-stock");
+      }
+
+      function productDB() {
+        clearTotalValue();
+        const id = document.getElementById("id").value;
+        const name = document.getElementById("name").value;
+        const price = parseFloat(document.getElementById("price").value);
+        const quantity = parseInt(document.getElementById("quantity").value);
+
+        let productDetails = {
+          id: id,
+          name: name,
+          price: price,
+          quantity: quantity
+        };
+
+        if (!id || !name || Number.isNaN(price) || Number.isNaN(quantity)) {
+          output.innerHTML = `<p style = "color:red;">Error: All fields required</p>`;
+
+          setTimeout(() => {
+            output.innerHTML = "";
+          }, 2000);
+
+          return;
+        }
+
+        products.push(productDetails);
+
+        localStorage.setItem("store", JSON.stringify(products));
+
+        output.innerHTML = `<p style = "color:green;">product sucessfully added</p>`;
+
+        document.getElementById("id").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("quantity").value = "";
+
+        setTimeout(() => {
+          output.innerHTML = "";
+        }, 2000);
+
+        console.log(products);
+      }
+
+      //SHOW PRODUCTS
+      const showProducts = document.getElementById("all-products");
+
+      showProducts.addEventListener("click", () => displayProducts());
+
+      function displayProducts(productsToDisplay = products, view = "all") {
+        clearTotalValue();
+        output.innerHTML = "";
+        currentView = view;
+        products = JSON.parse(localStorage.getItem("store")) || [];
+        if (productsToDisplay.length === 0) {
+          output.innerHTML = "<p>No products found.</p>";
+          return;
+        }
+
+        let table = document.createElement("table");
+
+        let header = `
+   <tr>
+      <th>Name</th>
+      <th>Price</th>
+      <th>Quantity  </th>
+      <th>ID</th>
+      <th>Action</th>
+    </tr>
+  `;
+
+        table.innerHTML = header;
+
+        productsToDisplay.forEach((product) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+        <td>${product.name}</td>
+        <td>${product.price}</td>
+        <td>${product.quantity}</td>
+        <td>${product.id}</td>   
+        <td></td>
+    `;
+          const deleteButton = document.createElement("button");
+          deleteButton.type = "button";
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", () =>
+            deleteProduct(products.findIndex((storedProduct) => storedProduct.id === product.id))
+          );
+          row.querySelector("td:last-child").appendChild(deleteButton);
+          table.appendChild(row);
+        });
+
+        output.appendChild(table);
+
+        console.log(output);
+      }
+    </script>
+
+    <script>
+
+      function updateProductQuantity() {
+        clearTotalValue();
+        const id = document.getElementById("id").value.trim();
+        const quantity = parseInt(document.getElementById("quantity").value, 10);
+
+        if (!id || Number.isNaN(quantity) || quantity < 0) {
+          output.innerHTML = `<p style="color:red;">Enter a valid product ID and quantity</p>`;
+          return;
+        }
+
+        const product = products.find((storedProduct) => storedProduct.id === id);
+
+        if (!product) {
+          output.innerHTML = `<p style="color:red;">Error: Product not found</p>`;
+          return;
+        }
+
+        product.quantity = quantity;
+        localStorage.setItem("store", JSON.stringify(products));
+
+        if (currentView === "search") {
+          searchProduct();
+        } else if (currentView === "low-stock") {
+          showLowStockProducts();
+        } else {
+          displayProducts();
+        }
+        output.insertAdjacentHTML(
+          "afterbegin",
+          `<p style="color:green;">Product quantity successfully updated</p>`
+        );
+      }
+
+      updateQuantityBtn.addEventListener("click", updateProductQuantity);
+
+
+      function deleteProduct(index) {
+        clearTotalValue();
+        products.splice(index, 1);
+        localStorage.setItem("store", JSON.stringify(products));
+
+        if (currentView === "all") {
+          displayProducts();
+        } else if (currentView === "search") {
+          searchProduct();
+        } else if (currentView === "low-stock") {
+          showLowStockProducts();
+        }
+      }
+    </script>
+  </body>
+</html>
